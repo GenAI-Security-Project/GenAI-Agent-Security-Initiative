@@ -1,6 +1,6 @@
 # Agent OS — Governance Framework for Agentic AI Security
 
-[Agent OS](https://github.com/imran-siddique/agent-os) is an open-source governance kernel for autonomous AI agents. It provides runtime policy enforcement, capability sandboxing, and kill-switch controls — addressing 9 of 10 OWASP Agentic Top 10 risks.
+[Agent OS](https://github.com/microsoft/agent-governance-toolkit) is an open-source governance kernel for autonomous AI agents. It provides runtime policy enforcement, capability sandboxing, and kill-switch controls — addressing 9 of 10 OWASP Agentic Top 10 risks.
 
 ## Architecture
 
@@ -41,9 +41,9 @@ pip install agent-os agentmesh agent-hypervisor
 
 ## Links
 
-- [Agent OS](https://github.com/imran-siddique/agent-os) — Governance kernel
-- [Agent Mesh](https://github.com/imran-siddique/agent-mesh) — Inter-agent trust layer
-- [Agent Hypervisor](https://github.com/imran-siddique/agent-hypervisor) — Execution isolation
-- [Agent SRE](https://github.com/imran-siddique/agent-sre) — Observability & reliability
-- [Agent Governance](https://github.com/imran-siddique/agent-governance) — Meta-framework & compliance
-- [OWASP Compliance Mapping](https://github.com/imran-siddique/agent-governance/blob/master/docs/OWASP-COMPLIANCE.md)
+- [Agent OS](https://github.com/microsoft/agent-governance-toolkit) — Governance kernel
+- [Agent Mesh](https://github.com/microsoft/agent-governance-toolkit) — Inter-agent trust layer
+- [Agent Hypervisor](https://github.com/microsoft/agent-governance-toolkit) — Execution isolation
+- [Agent SRE](https://github.com/microsoft/agent-governance-toolkit) — Observability & reliability
+- [Agent Governance](https://github.com/microsoft/agent-governance-toolkit) — Meta-framework & compliance
+- [OWASP Compliance Mapping](https://github.com/microsoft/agent-governance-toolkit/blob/master/docs/OWASP-COMPLIANCE.md)
