@@ -26,7 +26,7 @@ Each example is accompanied by a description of the vulnerability.
 
 ## Contributing
 
-The guidelines for contributing are described in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+The guidelines for contributing are described in the [CONTRIBUTING.md](code_samples/CONTRIBUTING.md) file.
 
 ## How to join the ASI
 
