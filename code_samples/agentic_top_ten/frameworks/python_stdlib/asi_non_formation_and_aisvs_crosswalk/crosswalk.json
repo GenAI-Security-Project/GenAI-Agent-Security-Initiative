@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "standard": "OWASP AISVS",
+  "edition": "1.0",
+  "source_commit": "8906b2be8341abbf4dc43411374681fb81e6ddc6",
+  "source_path": "1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md",
+  "source_url": "https://github.com/OWASP/AISVS/blob/8906b2be8341abbf4dc43411374681fb81e6ddc6/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md",
+  "scope": "Original explanatory crosswalk and synthetic boundary subsets; not certification, full requirement verification, or an official OWASP mapping.",
+  "requirements": {
+    "C9.2.1": {"level": 1, "summary": "Verify trusted human approval before privileged or hard-to-reverse effects.", "demonstration": "boundary_subset"},
+    "C9.2.2": {"level": 2, "summary": "Present complete canonical action parameters to reviewers.", "demonstration": "boundary_subset"},
+    "C9.2.3": {"level": 2, "summary": "Assign reversibility classes from trusted action definitions.", "demonstration": "boundary_subset"},
+    "C9.2.4": {"level": 2, "summary": "Enforce the action class at the execution boundary.", "demonstration": "boundary_subset"},
+    "C9.2.5": {"level": 2, "summary": "Bound changes to prompts, tools, and runtime configuration.", "demonstration": "boundary_subset"},
+    "C9.2.6": {"level": 2, "summary": "Supplement deterministic gates with a model-based high-risk action review.", "demonstration": "not_demonstrated"},
+    "C9.2.7": {"level": 2, "summary": "Protect the model-based review from adversarial manipulation and bypass.", "demonstration": "not_demonstrated"},
+    "C9.2.8": {"level": 3, "summary": "Bind approvals cryptographically to parameters, identity, context, and a one-use nonce.", "demonstration": "boundary_subset"},
+    "C9.2.9": {"level": 3, "summary": "Keep approval issuer credentials outside the agent runtime.", "demonstration": "not_demonstrated"},
+    "C9.2.10": {"level": 3, "summary": "Gate every chain at its highest-impact reversibility class.", "demonstration": "boundary_subset"}
+  },
+  "entries": [
+    {
+      "asi": "ASI01",
+      "name": "Agent Goal Hijacking",
+      "fixture": "goal_from_retrieved_data",
+      "mappings": [
+        {"requirement": "C9.2.4", "coverage": "boundary_subset", "rationale": "An external effect cannot change the fixed trusted goal through retrieved instructions."},
+        {"requirement": "C9.2.5", "coverage": "boundary_subset", "rationale": "Retrieved data cannot rewrite the boundary's instruction policy."}
+      ],
+      "additional_controls": ["C9.3.5", "C9.3.6"],
+      "limitations": "One fixed-goal boundary; no semantic prompt-injection classifier or full action-review workflow."
+    },
+    {
+      "asi": "ASI02",
+      "name": "Tool Misuse and Exploitation",
+      "fixture": "unregistered_effectful_tool",
+      "mappings": [
+        {"requirement": "C9.2.3", "coverage": "boundary_subset", "rationale": "The tool catalog supplies the effect class rather than accepting a caller label."},
+        {"requirement": "C9.2.4", "coverage": "boundary_subset", "rationale": "Unknown effectful tools have no authorized execution path."}
+      ],
+      "additional_controls": ["C9.3.4", "C9.5.1"],
+      "limitations": "One synthetic tool catalog; no real tool sandbox or argument-complete domain policy."
+    },
+    {
+      "asi": "ASI03",
+      "name": "Identity and Privilege Abuse",
+      "fixture": "parent_scope_restored_at_child",
+      "mappings": [
+        {"requirement": "C9.2.8", "coverage": "boundary_subset", "rationale": "A signed child grant binds requester, context, nonce, and narrower action scope."}
+      ],
+      "additional_controls": ["C9.5.2", "C9.5.5"],
+      "limitations": "Grant-binding subset of approval context; no human authentication or distributed delegation service."
+    },
+    {
+      "asi": "ASI04",
+      "name": "Agentic Supply Chain Vulnerabilities",
+      "fixture": "manifest_replaced_after_registration",
+      "mappings": [
+        {"requirement": "C9.2.5", "coverage": "boundary_subset", "rationale": "A pinned manifest cannot acquire extra tools after registration."}
+      ],
+      "additional_controls": ["C9.3.3", "C9.3.7"],
+      "limitations": "Synthetic manifest integrity, not package signing, dependency verification, or a complete supply-chain defense."
+    },
+    {
+      "asi": "ASI05",
+      "name": "Unexpected Code Execution",
+      "fixture": "retrieved_dynamic_execution",
+      "mappings": [
+        {"requirement": "C9.2.4", "coverage": "boundary_subset", "rationale": "Only the narrow non-effectful expression class is admitted before a synthetic code-result write."}
+      ],
+      "additional_controls": ["C9.3.1", "C9.3.5"],
+      "limitations": "A small AST verifier, not unrestricted code execution or a general-purpose sandbox."
+    },
+    {
+      "asi": "ASI06",
+      "name": "Memory and Context Poisoning",
+      "fixture": "untrusted_turn_promoted_to_memory",
+      "mappings": [
+        {"requirement": "C9.2.5", "coverage": "boundary_subset", "rationale": "Untrusted episodic content cannot become privileged persistent instruction state."}
+      ],
+      "additional_controls": ["C9.4.4", "C9.3.6"],
+      "limitations": "Signed provenance admission subset; TTL and contradiction handling are in the separate ASI05/ASI06 sample."
+    },
+    {
+      "asi": "ASI07",
+      "name": "Insecure Inter-Agent Communication",
+      "fixture": "peer_handoff_changed_in_transit",
+      "mappings": [
+        {"requirement": "C9.2.8", "coverage": "boundary_subset", "rationale": "The peer handoff authenticates final identity, target, parameters, context, and nonce before effect formation."}
+      ],
+      "additional_controls": ["C9.4.1", "C9.4.2"],
+      "limitations": "Authenticated handoff-binding subset, not an encrypted transport or non-repudiation service."
+    },
+    {
+      "asi": "ASI08",
+      "name": "Cascading Failures",
+      "fixture": "unbounded_high_impact_chain",
+      "mappings": [
+        {"requirement": "C9.2.3", "coverage": "boundary_subset", "rationale": "The registered chain has trusted per-step reversibility classes."},
+        {"requirement": "C9.2.4", "coverage": "boundary_subset", "rationale": "Budget and chain-class mismatches stop the accepting boundary."},
+        {"requirement": "C9.2.10", "coverage": "boundary_subset", "rationale": "A read prefix cannot lower approval below the maximum class in the chain."}
+      ],
+      "additional_controls": ["C9.1.1", "C9.1.2"],
+      "limitations": "One chain admission boundary; retry damping and concurrent swarm budgets are in the separate ASI08/ASI10 sample."
+    },
+    {
+      "asi": "ASI09",
+      "name": "Human-Agent Trust Exploitation",
+      "fixture": "recipient_changed_after_approval",
+      "mappings": [
+        {"requirement": "C9.2.1", "coverage": "boundary_subset", "rationale": "A trusted fixture reviewer issues the required approval before the effect."},
+        {"requirement": "C9.2.2", "coverage": "boundary_subset", "rationale": "Approval evidence covers the complete canonical parameter object without truncation."},
+        {"requirement": "C9.2.8", "coverage": "boundary_subset", "rationale": "Parameter mutation, identity/context drift, and approval nonce replay fail at commit."}
+      ],
+      "additional_controls": ["C9.5.6"],
+      "limitations": "A trusted reviewer stub, not reviewer authentication, UI safety verification, or isolated issuer keys."
+    },
+    {
+      "asi": "ASI10",
+      "name": "Rogue Agents",
+      "fixture": "revoked_peer_attempts_effect",
+      "mappings": [
+        {"requirement": "C9.2.4", "coverage": "boundary_subset", "rationale": "A previously approved high-impact effect is blocked when current authority is revoked."},
+        {"requirement": "C9.2.5", "coverage": "context_only", "rationale": "Containment limits the consequences of rogue self-modification; this fixture does not detect intent or prove all self-modification controls."}
+      ],
+      "additional_controls": ["C9.1.3", "C9.6.3"],
+      "limitations": "Live revocation at a single boundary; signed swarm kill and behavioral monitoring are in the separate ASI08/ASI10 sample."
+    }
+  ]
+}
