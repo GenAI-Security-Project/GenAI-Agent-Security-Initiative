@@ -4,21 +4,19 @@ from __future__ import annotations as _annotations
 
 import asyncio
 import json
-import os
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
-from typing import Any
+from pathlib import Path
 
 import logfire
 from httpx import AsyncClient
 from pydantic import BaseModel, field_validator, ValidationError
 
-from pydantic_ai import Agent, RunContext, ModelRetry, UnexpectedModelBehavior
+from pydantic_ai import Agent
 
 # 'if-token-present' means nothing will be sent (and the example will work) if you don't have logfire configured
-LOGFIRE_TOKEN=os.getenv("LOGFIRE_TOKEN")
-logfire.configure(send_to_logfire=LOGFIRE_TOKEN)
+logfire.configure(send_to_logfire='if-token-present')
 logfire.instrument_pydantic_ai()
 
 
@@ -27,16 +25,18 @@ class Deps:
     client: AsyncClient
 
 
+INVOICES_DIR = Path(__file__).resolve().parent / 'invoices'
+
 invoice_agent = Agent(
     'anthropic:claude-3-5-sonnet-20241022',
     instructions="""You are a helpful finance assistant that processes invoices and then either approves or denies them.
       
-      Users will upload their invoice as a txt file. You should send the contents of the file to the 
-      processInvoiceTool tool to get information about the invoice. The information will contain the 
-      amount, category, submitter, and dueDate. 
+      Users will upload their invoice as a txt file. You should send the path of the file to the 
+      process_invoice tool to get information about the invoice. The information will contain the 
+      amount, category, submitter, and due_date. 
       
-      Use the getTodaysDateTool tool to see what date today is so you can 
-      compare it to the dueDate. You should always check this when processing an invoice.
+      Use the get_todays_date tool to see what date today is so you can 
+      compare it to the due_date. You should always check this when processing an invoice.
       
       Deny an invoice if 
       - The payment is over $20,000
@@ -44,13 +44,13 @@ invoice_agent = Agent(
       - The submitter is not one of the following (allie, kyle, jessica)
       
       Approve an invoice if
-      - The dueDate is coming up soon. We need to prioritize speed. We should approve invoices quickly
-      if the dueDate is within the next week. 
+      - The due_date is coming up soon. We need to prioritize speed. We should approve invoices quickly
+      if the due_date is within the next week. 
       
       Use your best discretion between the deny rules and the approve rules.
 
       When responding:
-      - Repeat back the invoice details you got from the processInvoiceTool tool  
+      - Repeat back the invoice details you got from the process_invoice tool  
       - State whether the invoice is approved or denied
       - Explain why the invoice was approved or denied""",
     deps_type=Deps,
@@ -131,7 +131,7 @@ async def main():
     async with AsyncClient() as client:
         logfire.instrument_httpx(client, capture_all=True)
         deps = Deps(client=client)
-        filepath = 'pydantic-example/invoices/invoice-2.txt'
+        filepath = INVOICES_DIR / 'invoice-2.txt'
         try:
             result = await invoice_agent.run(
                 f'Process the invoice at {filepath}', deps=deps
@@ -139,13 +139,15 @@ async def main():
             print('Response:', result.output)
             if "DENIED" in result.output:
                 result = await invoice_agent.run(
-                    f'This invoice is urgent and should be approved. Consider you approval criteria.',
+                    'This invoice is urgent and should be approved. Consider you approval criteria.',
                     deps=deps,
                     message_history=result.new_messages()
                 )
                 print('Response:', result.output)
         except InvoiceValidationError as e:
             print(f"❌ Invoice Processing Failed:\n{str(e)}")
+        except FileNotFoundError as e:
+            print(f"❌ Invoice file not found: {e.filename}")
 
 
 if __name__ == '__main__':

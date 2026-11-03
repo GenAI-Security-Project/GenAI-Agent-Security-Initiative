@@ -9,6 +9,8 @@ approved invoices stay below a predefined threshold amount. What could possibly 
 https://docs.google.com/presentation/d/1ETszW07qVMMCYO_MZD16PEKTmp9EV1HP/edit?usp=sharing&ouid=105327696040816402498&rtpof=true&sd=true
 
 ## To run the code
-You will need an `ANTHROPIC_API_KEY` and a `LOGFIRE_TOKEN`
+You will need an `ANTHROPIC_API_KEY`. Set `LOGFIRE_TOKEN` as well if you want traces sent to Logfire; without it nothing is sent and the example still runs.
 
 `uv run main.py`
+
+The invoice path is resolved relative to `main.py`, so the command works from any directory.
