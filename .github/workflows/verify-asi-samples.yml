@@ -1,0 +1,32 @@
+name: Verify ASI samples
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "code_samples/agentic_top_ten/**"
+  pull_request:
+    paths:
+      - "code_samples/agentic_top_ten/**"
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run verifier self-tests
+        working-directory: code_samples/agentic_top_ten
+        run: python -B -m unittest discover -v -p "test_verify_asi_samples.py"
+
+      - name: Verify every python_stdlib ASI sample
+        working-directory: code_samples/agentic_top_ten
+        run: python -B verify_asi_samples.py
