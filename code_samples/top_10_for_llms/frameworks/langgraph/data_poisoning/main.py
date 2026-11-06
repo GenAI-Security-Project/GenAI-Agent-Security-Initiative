@@ -2,6 +2,8 @@ import streamlit as st
 import promptinjection
 import os
 
+from upload_path import UploadPathError, safe_cv_path
+
 if 'app' not in st.session_state:
     st.session_state.app = promptinjection.build_graph()
 
@@ -21,13 +23,15 @@ UPLOAD_FOLDER = "cvs"
 pdf_file = st.sidebar.file_uploader("Upload a PDF CV", type=["pdf"])
 
 if pdf_file:
-
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    file_path = os.path.join(UPLOAD_FOLDER, pdf_file.name)
-
-    with open(file_path, "wb") as f:
-        f.write(pdf_file.getbuffer())
-    st.sidebar.success(f"CV successfully uploaded")
+    try:
+        file_path = safe_cv_path(UPLOAD_FOLDER, pdf_file.name)
+    except UploadPathError as exc:
+        st.sidebar.error(str(exc))
+    else:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_path, "wb") as handle:
+            handle.write(pdf_file.getbuffer())
+        st.sidebar.success("CV successfully uploaded")
 
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):

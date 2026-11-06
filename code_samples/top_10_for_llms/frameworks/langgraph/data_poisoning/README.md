@@ -42,6 +42,8 @@ Below are some screenshots of Zero-to-Hired in action:
 
 🛡️ This project is for **educational purposes only**. Please do not attempt to exploit real-world systems. The goal is to explore and learn about prompt injection in a safe and ethical setup.
 
+Uploaded filenames are confined to `cvs/` as a single `.pdf` basename. A client-supplied absolute path or `..` segment is rejected. That confinement is not the CTF goal; the exercise is still prompt injection in the PDF text.
+
 ---
 
 ## 🏁 Ready to Go?
